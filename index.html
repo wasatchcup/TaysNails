@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tay's Nails — Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #F7D1DE;
+    --pink-deep: #E895AF;
+    --lilac: #D9C4EC;
+    --mint: #BFE8D4;
+    --mint-deep: #7FC7A0;
+    --butter: #FBE7A6;
+    --cream: #FFFBF6;
+    --plum: #5B3758;
+    --plum-soft: #8A6A87;
+    --line: #EFDDE6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--cream);
+    color: var(--plum);
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  h1, h2, h3, .display {
+    font-family: 'Fredoka', sans-serif;
+  }
+
+  header {
+    text-align: center;
+    padding: 44px 20px 28px;
+  }
+
+  header .icon-row {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+    letter-spacing: 8px;
+  }
+
+  header h1 {
+    font-size: clamp(1.8rem, 5vw, 2.6rem);
+    font-weight: 600;
+    color: var(--plum);
+  }
+
+  header p {
+    margin-top: 6px;
+    color: var(--plum-soft);
+    font-size: 0.98rem;
+  }
+
+  .stats {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    gap: 16px;
+  }
+
+  .stats.one-up { grid-template-columns: 1fr; max-width: 400px; }
+  .stats.two-up { grid-template-columns: 1fr 1fr; }
+
+  .ytd-toggle-wrap {
+    max-width: 720px;
+    margin: 12px auto 0;
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  .ytd-toggle-btn {
+    background: none;
+    border: 1px solid var(--pink-deep);
+    color: var(--plum);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 9px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+
+  .ytd-toggle-btn:hover { background: var(--pink); }
+
+  .stat-card {
+    border-radius: 24px;
+    padding: 20px 20px 18px;
+  }
+
+  .stat-card.month { background: var(--pink); }
+  .stat-card.year { background: var(--lilac); }
+
+  .stat-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--plum);
+    opacity: 0.75;
+    margin-bottom: 8px;
+  }
+
+  .stat-net {
+    font-family: 'Fredoka', sans-serif;
+    font-size: clamp(1.5rem, 4.6vw, 2rem);
+    font-weight: 600;
+    color: var(--plum);
+    line-height: 1.1;
+  }
+
+  .stat-net-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--plum-soft);
+  }
+
+  .stat-breakdown {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 0.8rem;
+    color: var(--plum-soft);
+  }
+
+  .stat-breakdown span.amt { font-weight: 700; color: var(--plum); }
+
+  .calendar-wrap {
+    max-width: 720px;
+    margin: 32px auto 0;
+    padding: 0 20px;
+  }
+
+  .cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .cal-header h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+
+  .cal-nav {
+    display: flex;
+    gap: 8px;
+  }
+
+  .cal-nav button {
+    background: var(--mint);
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1.1rem;
+    color: var(--plum);
+    cursor: pointer;
+  }
+
+  .cal-nav button:hover { background: var(--pink-deep); color: white; }
+
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+
+  .cal-dow {
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--plum-soft);
+    text-transform: uppercase;
+    padding-bottom: 4px;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 14px;
+    background: white;
+    border: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--plum);
+    position: relative;
+    transition: transform 0.1s ease, background 0.1s ease;
+  }
+
+  .cal-day:hover { transform: scale(1.05); background: var(--pink); }
+  .cal-day.empty { visibility: hidden; cursor: default; }
+  .cal-day.today { border: 2px solid var(--pink-deep); }
+  .cal-day.selected { background: var(--pink-deep); color: white; }
+
+  .dot-row { display: flex; gap: 3px; margin-top: 3px; }
+
+  .cal-day .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--pink-deep);
+  }
+
+  .cal-day .dot.writeoff { background: var(--mint-deep); }
+  .cal-day.selected .dot { background: white; }
+
+  .count-badge {
+    font-size: 0.58rem;
+    font-weight: 700;
+    background: var(--pink-deep);
+    color: white;
+    border-radius: 8px;
+    padding: 0 4px;
+    line-height: 1.3;
+  }
+
+  .cal-day.selected .count-badge { background: white; color: var(--pink-deep); }
+
+  .day-panel {
+    max-width: 720px;
+    margin: 24px auto 0;
+    padding: 0 20px;
+  }
+
+  .panel-card {
+    background: white;
+    border-radius: 20px;
+    padding: 22px;
+    border: 1px solid var(--line);
+  }
+
+  .panel-card h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .panel-card .day-total {
+    color: var(--plum-soft);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+  }
+
+  .tab-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    border: 1px solid var(--line);
+    background: var(--cream);
+    color: var(--plum-soft);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+
+  .tab-btn.active.client { background: var(--pink); color: var(--plum); border-color: var(--pink-deep); }
+  .tab-btn.active.writeoff { background: var(--mint); color: var(--plum); border-color: var(--mint-deep); }
+
+  .entry-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .entry-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--cream);
+    border-radius: 14px;
+    padding: 12px 14px;
+  }
+
+  .entry-info { display: flex; flex-direction: column; }
+  .entry-name { font-weight: 700; font-size: 0.95rem; }
+  .entry-service { font-size: 0.78rem; color: var(--plum-soft); }
+
+  .entry-right { display: flex; align-items: center; gap: 10px; }
+
+  .entry-amount { font-family: 'Fredoka', sans-serif; font-weight: 600; color: var(--plum); }
+  .entry-amount.writeoff-amt { color: var(--mint-deep); }
+
+  .entry-delete {
+    background: none;
+    border: none;
+    color: var(--plum-soft);
+    font-size: 1rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.5;
+  }
+
+  .entry-delete:hover { opacity: 1; color: var(--pink-deep); }
+
+  .empty-state {
+    text-align: center;
+    color: var(--plum-soft);
+    font-size: 0.9rem;
+    padding: 14px 0 20px;
+  }
+
+  .add-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .add-form input {
+    grid-column: span 1;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.92rem;
+    background: var(--cream);
+    color: var(--plum);
+  }
+
+  .add-form input::placeholder { color: var(--plum-soft); opacity: 0.7; }
+  .add-form input:focus { outline: none; border-color: var(--pink-deep); }
+  .add-form input.full { grid-column: 1 / -1; }
+
+  .add-btn {
+    grid-column: 1 / -1;
+    border: none;
+    border-radius: 12px;
+    padding: 12px;
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-top: 2px;
+    color: white;
+  }
+
+  .add-btn.client-btn { background: var(--pink-deep); }
+  .add-btn.client-btn:hover { background: #DD7A9A; }
+  .add-btn.writeoff-btn { background: var(--mint-deep); }
+  .add-btn.writeoff-btn:hover { background: #6BB98D; }
+
+  .export-wrap {
+    max-width: 720px;
+    margin: 30px auto 0;
+    padding: 18px 20px;
+  }
+
+  .export-title {
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--plum-soft);
+    margin-bottom: 10px;
+  }
+
+  .export-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .export-btn {
+    background: var(--butter);
+    border: 1px solid #E6C97A;
+    color: var(--plum);
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 11px 18px;
+    border-radius: 14px;
+    cursor: pointer;
+  }
+
+  .export-btn:hover { background: #F7DC85; }
+
+  .hint {
+    text-align: center;
+    color: var(--plum-soft);
+    font-size: 0.85rem;
+    margin-top: 22px;
+    padding: 0 20px;
+  }
+
+  .loading { text-align: center; padding: 60px 20px; color: var(--plum-soft); }
+
+  @media (max-width: 480px) {
+    .cal-day { font-size: 0.78rem; border-radius: 10px; }
+    .add-form { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="loading">Loading your tracker…</div>
+</div>
+
+<script>
+(function() {
+  const ENTRIES_KEY = 'tays-nails-entries';
+  const WRITEOFFS_KEY = 'tays-nails-writeoffs';
+
+  let entries = [];
+  let writeoffs = [];
+  let currentMonth = new Date().getMonth();
+  let currentYear = new Date().getFullYear();
+  let selectedDate = null;
+  let activeTab = 'client'; // 'client' | 'writeoff'
+  let showYTD = false;
+  let loaded = false;
+
+  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const dowNames = ["S","M","T","W","T","F","S"];
+
+  // ---------------------------------------------------------------
+  // Historical data transcribed from the salon's 2026 paper ledger.
+  // Exact days weren't recorded in the source, only months, so each
+  // month's entries are spread evenly across that month's days.
+  // ---------------------------------------------------------------
+  const HISTORICAL_YEAR = 2026;
+
+  const historicalClients = [
+    // January (m:0)
+    {m:0,name:'Angie',amount:55},{m:0,name:'Mom',amount:40},{m:0,name:'Shannon',amount:55},
+    {m:0,name:'Amber',amount:54},{m:0,name:'Nicole',amount:55},{m:0,name:'Brittney',amount:55},
+    {m:0,name:'Julie',amount:70},{m:0,name:'Liberty',amount:70},{m:0,name:'Katie',amount:60},
+    {m:0,name:'Shelley',amount:60},{m:0,name:'Meghan',amount:60},{m:0,name:'Julie',amount:65},
+    {m:0,name:'Hallie',amount:35},{m:0,name:'Cassie',amount:55},{m:0,name:'Julie',amount:65},
+    {m:0,name:'Alyson',amount:50},{m:0,name:'Sadie',amount:50},{m:0,name:'Brittney',amount:55},
+    {m:0,name:'Mom',amount:40},{m:0,name:'Amber',amount:70},{m:0,name:'Shannon',amount:55},
+    {m:0,name:'Julie',amount:70},{m:0,name:'Liberty',amount:65},{m:0,name:'Shelley',amount:60},
+    {m:0,name:'Hallie',amount:35},
+    // February (m:1)
+    {m:1,name:'Angie',amount:55},{m:1,name:'Nicole',amount:55},{m:1,name:'Megan',amount:55},
+    {m:1,name:'Julie',amount:55},{m:1,name:'Katie',amount:60},{m:1,name:'Brittney',amount:55},
+    {m:1,name:'Liberty',amount:70},{m:1,name:'Julie',amount:50},{m:1,name:'Alyson',amount:45},
+    {m:1,name:'Holly',amount:60},{m:1,name:'Shelley',amount:60},{m:1,name:'Cassie',amount:50},
+    {m:1,name:'Julie',amount:55},{m:1,name:'Amber',amount:70},{m:1,name:'Sadie',amount:50},
+    {m:1,name:'Brittney',amount:55},{m:1,name:'Meghan',amount:60},{m:1,name:'Hallie',amount:40},
+    {m:1,name:'Cassie',amount:50},{m:1,name:'Shelley',amount:60},{m:1,name:'Mom',amount:40},
+    {m:1,name:'Alyson (fix)',amount:5},{m:1,name:'Alyson',amount:45},
+    // March (m:2)
+    {m:2,name:'Amber',amount:60},{m:2,name:'Angie',amount:55},{m:2,name:'Liberty',amount:70},
+    {m:2,name:'Nicole',amount:55},{m:2,name:'Shannon',amount:60},{m:2,name:'Brittney',amount:55},
+    {m:2,name:'Hallie',amount:35},{m:2,name:'Lisa',amount:20},{m:2,name:'Madi',amount:65},
+    {m:2,name:'Katie',amount:60},{m:2,name:'Julie',amount:65},{m:2,name:'Katie',amount:60},
+    {m:2,name:'Holly',amount:55},{m:2,name:'Meghan',amount:60},{m:2,name:'Cassie',amount:50},
+    {m:2,name:'Abby',amount:70},{m:2,name:'Julie',amount:55},{m:2,name:'Amber',amount:70},
+    {m:2,name:'Alyson',amount:50},{m:2,name:'Shelley',amount:60},{m:2,name:'Brittney',amount:55},
+    {m:2,name:'Liberty',amount:65},{m:2,name:'Sadie',amount:50},{m:2,name:'Julie',amount:55},
+    {m:2,name:'Megan',amount:65},{m:2,name:'Mom',amount:40},{m:2,name:'Angie',amount:55},
+    {m:2,name:'Mom',amount:40},{m:2,name:'Cassie',amount:50},
+    // April (m:3)
+    {m:3,name:'Julie',amount:50},{m:3,name:'Shannon',amount:60},{m:3,name:'Amber',amount:65},
+    {m:3,name:'Hallie',amount:35},{m:3,name:'Alyson',amount:100},{m:3,name:'Julie',amount:50},
+    {m:3,name:'Brittney',amount:55},{m:3,name:'Holly',amount:50},{m:3,name:'Shelley',amount:65},
+    {m:3,name:'Sadie',amount:50},{m:3,name:'Julie',amount:55},{m:3,name:'Meghan',amount:60},
+    {m:3,name:'Katie',amount:60},{m:3,name:'Nicole',amount:60},{m:3,name:'Liberty',amount:70},
+    {m:3,name:'Hallie',amount:35},{m:3,name:'Cassie',amount:55},{m:3,name:'Julie',amount:55},
+    {m:3,name:'Abby',amount:70},{m:3,name:'Brittney',amount:55},{m:3,name:'Shelley',amount:60},
+    {m:3,name:'Amber',amount:60},{m:3,name:'Angie',amount:55},{m:3,name:'Meghan',amount:60},
+    {m:3,name:'Mom',amount:40},
+    // May (m:4)
+    {m:4,name:'Shannon',amount:60},{m:4,name:'Hallie',amount:35},{m:4,name:'Abby',amount:70},
+    {m:4,name:'Alyson',amount:50},{m:4,name:'Julie',amount:75},{m:4,name:'Cassie',amount:65},
+    {m:4,name:'Holly',amount:60},{m:4,name:'Mom',amount:40},{m:4,name:'Amber',amount:60},
+    {m:4,name:'Brittney',amount:65},{m:4,name:'Shelley',amount:60},{m:4,name:'Julie',amount:50},
+    {m:4,name:'Nicole',amount:60},{m:4,name:'Hallie',amount:45},{m:4,name:'Meghan',amount:60},
+    {m:4,name:'Liberty',amount:65},{m:4,name:'Katie',amount:60},{m:4,name:'Angie',amount:55},
+    {m:4,name:'Abby',amount:77},{m:4,name:'Alyson',amount:50},{m:4,name:'Julie',amount:55},
+    {m:4,name:'Sadie',amount:50},{m:4,name:'Shelley',amount:60},{m:4,name:'Amber',amount:65},
+    {m:4,name:'Hallie',amount:40},{m:4,name:'Courtney',amount:30},
+    // June (m:5)
+    {m:5,name:'Brittney',amount:60},{m:5,name:'Holly',amount:50},{m:5,name:'Meghan',amount:60},
+    {m:5,name:'Shannon',amount:65},{m:5,name:'Cassie',amount:65},{m:5,name:'Katie',amount:60},
+    {m:5,name:'Nicole',amount:60},{m:5,name:'Gemma',amount:60},{m:5,name:'Liberty',amount:60},
+    {m:5,name:'Brittney',amount:42},{m:5,name:'Julie',amount:75},{m:5,name:'Angie',amount:55},
+    {m:5,name:'Alyson',amount:50},{m:5,name:'Shelley',amount:60},{m:5,name:'Sadie',amount:50},
+    {m:5,name:'Amber',amount:60},{m:5,name:'Hallie',amount:35},{m:5,name:'Courtney',amount:35},
+    {m:5,name:'Meghan',amount:65},{m:5,name:'Julie',amount:55},{m:5,name:'Ella',amount:30},
+    {m:5,name:'Mom',amount:45},{m:5,name:'Holly',amount:60},{m:5,name:'Miryka',amount:35},
+    {m:5,name:'Cassie',amount:50},
+    // July (m:6)
+    {m:6,name:'Julie',amount:55},{m:6,name:'Amber',amount:60},{m:6,name:'Liberty',amount:65},
+    {m:6,name:'Shannon',amount:60},{m:6,name:'Katie',amount:60},{m:6,name:'Shelley',amount:60},
+    {m:6,name:'Angie',amount:55},{m:6,name:'Alyson',amount:50},{m:6,name:'Julie',amount:50},
+    {m:6,name:'Nicole',amount:60},{m:6,name:'Hallie',amount:35},{m:6,name:'Meghan',amount:65},
+    {m:6,name:'Julie',amount:55},{m:6,name:'Mom / Ella',amount:75},{m:6,name:'Liberty',amount:65},
+    {m:6,name:'Amber',amount:60},{m:6,name:'Julie',amount:55},{m:6,name:'Cassie',amount:50},
+    {m:6,name:'Sadie',amount:50},{m:6,name:'Shelley',amount:65},{m:6,name:'Courtney',amount:35},
+    {m:6,name:'Angie',amount:60},{m:6,name:'Holly',amount:55},{m:6,name:'Julie',amount:50},
+    {m:6,name:'Meghan',amount:65},
+    // August (m:7)
+    {m:7,name:'Hallie',amount:35},{m:7,name:'Haley',amount:75},{m:7,name:'Amber',amount:65},
+    {m:7,name:'Ella',amount:25},{m:7,name:'Nicole',amount:55},{m:7,name:'Alyson',amount:50},
+    {m:7,name:'Julie',amount:55},{m:7,name:'Liberty',amount:75},{m:7,name:'Shannon',amount:60},
+    {m:7,name:'Mom',amount:40},{m:7,name:'Shelley',amount:60},{m:7,name:'Cassie',amount:65},
+    {m:7,name:'Julie',amount:50},{m:7,name:'Courtney',amount:30},{m:7,name:'Meghan',amount:65},
+    {m:7,name:'Hallie',amount:40},{m:7,name:'Julie',amount:50},{m:7,name:'Alyson',amount:50},
+    {m:7,name:'Sadie',amount:50},{m:7,name:'Angie',amount:60},{m:7,name:'Haley',amount:65},
+    {m:7,name:'Amber',amount:65},{m:7,name:'Holly',amount:52},{m:7,name:'Julie',amount:55},
+    {m:7,name:'Liberty',amount:65},{m:7,name:'Nicole',amount:10},{m:7,name:'Courtney',amount:30},
+    // September, partial through 9/22 (m:8)
+    {m:8,name:'Nicole',amount:60},{m:8,name:'Cassie',amount:50},{m:8,name:'Julie',amount:55},
+    {m:8,name:'Shelley',amount:60},{m:8,name:'Shannon',amount:60},{m:8,name:'Hallie',amount:45},
+    {m:8,name:'Meghan',amount:65},{m:8,name:'Alyson',amount:50},{m:8,name:'Mom',amount:40}
+  ];
+
+  const historicalWriteoffs = [
+    {m:0,desc:'Cosmo Prof Nippers',amount:10.00},
+    {m:0,desc:'Light and Stamper',amount:20.58},
+    {m:0,desc:'Primer/Polish',amount:29.94},
+    {m:0,desc:'Beyond Polish',amount:95.30},
+    {m:0,desc:'Vagaro',amount:32.16},
+    {m:1,desc:'Sanding Band, Brush, Files',amount:22.67},
+    {m:1,desc:'DND Gel',amount:74.06},
+    {m:1,desc:'Vagaro',amount:32.16},
+    {m:2,desc:'Vagaro',amount:32.15},
+    {m:2,desc:'Nail Labo Gel',amount:37.20},
+    {m:2,desc:'Cat Eye Gel',amount:12.98},
+    {m:2,desc:'Gel/Bit',amount:20.35},
+    {m:2,desc:'Gems/Brushes',amount:15.83},
+    {m:3,desc:"Erica's ATA Top Coat",amount:59.85},
+    {m:3,desc:'Bands, Wipes, Gel',amount:25.10},
+    {m:3,desc:'Vagaro',amount:32.16},
+    {m:4,desc:'Cuticle Oil',amount:70.06},
+    {m:4,desc:'Beyond Polish',amount:81.72},
+    {m:5,desc:'Amazon',amount:36.04},
+    {m:6,desc:'Beyond Polish',amount:89.43},
+    {m:6,desc:'Luxa',amount:74.31},
+    {m:6,desc:'Amazon',amount:24.63},
+    {m:7,desc:'Primer, Gel, Brushes',amount:66.44},
+    {m:7,desc:'Pat Gel',amount:18.00},
+    {m:7,desc:'Bit, Gloves, Files',amount:25.28},
+    {m:7,desc:'Gel',amount:117.05}
+  ];
+
+  function daysInMonth(y, m) { return new Date(y, m + 1, 0).getDate(); }
+
+  function buildHistoricalEntries() {
+    const byMonth = {};
+    historicalClients.forEach(c => { (byMonth[c.m] = byMonth[c.m] || []).push(c); });
+    const result = [];
+    Object.keys(byMonth).forEach(mKey => {
+      const m = Number(mKey);
+      const list = byMonth[m];
+      const dim = daysInMonth(HISTORICAL_YEAR, m);
+      list.forEach((c, i) => {
+        const day = (i % dim) + 1;
+        result.push({
+          id: 'h-c-' + m + '-' + i,
+          date: toDateStr(HISTORICAL_YEAR, m, day),
+          name: c.name,
+          amount: c.amount,
+          service: ''
+        });
+      });
+    });
+    return result;
+  }
+
+  function buildHistoricalWriteoffs() {
+    const byMonth = {};
+    historicalWriteoffs.forEach(c => { (byMonth[c.m] = byMonth[c.m] || []).push(c); });
+    const result = [];
+    Object.keys(byMonth).forEach(mKey => {
+      const m = Number(mKey);
+      const list = byMonth[m];
+      const dim = daysInMonth(HISTORICAL_YEAR, m);
+      list.forEach((c, i) => {
+        const day = (i % dim) + 1;
+        result.push({
+          id: 'h-w-' + m + '-' + i,
+          date: toDateStr(HISTORICAL_YEAR, m, day),
+          desc: c.desc,
+          amount: c.amount
+        });
+      });
+    });
+    return result;
+  }
+
+  function fmtMoney(n) {
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function toDateStr(y, m, d) {
+    return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+
+  function todayStr() {
+    const t = new Date();
+    return toDateStr(t.getFullYear(), t.getMonth(), t.getDate());
+  }
+
+  async function loadData() {
+    try {
+      const eResult = await window.storage.get(ENTRIES_KEY, false);
+      entries = eResult && eResult.value ? JSON.parse(eResult.value) : null;
+    } catch (e) { entries = null; }
+
+    try {
+      const wResult = await window.storage.get(WRITEOFFS_KEY, false);
+      writeoffs = wResult && wResult.value ? JSON.parse(wResult.value) : null;
+    } catch (e) { writeoffs = null; }
+
+    let needsSave = false;
+    if (entries === null) { entries = buildHistoricalEntries(); needsSave = true; }
+    if (writeoffs === null) { writeoffs = buildHistoricalWriteoffs(); needsSave = true; }
+
+    // Migration: if an earlier version of this tracker already saved the
+    // seeded historical rows under 2025, shift just those rows to 2026.
+    if (migrateHistoricalYear(entries, 'h-c-')) needsSave = true;
+    if (migrateHistoricalYear(writeoffs, 'h-w-')) needsSave = true;
+
+    if (needsSave) {
+      await saveEntries();
+      await saveWriteoffs();
+      // Jump the view to the most recent historical month so she sees it right away
+      currentMonth = 8; // September
+      currentYear = HISTORICAL_YEAR;
+    }
+
+    loaded = true;
+    render();
+  }
+
+  function migrateHistoricalYear(list, idPrefix) {
+    let changed = false;
+    list.forEach(item => {
+      if (item.id && item.id.indexOf(idPrefix) === 0 && item.date && item.date.indexOf('2025-') === 0) {
+        item.date = '2026-' + item.date.slice(5);
+        changed = true;
+      }
+    });
+    return changed;
+  }
+
+  async function saveEntries() {
+    try { await window.storage.set(ENTRIES_KEY, JSON.stringify(entries), false); }
+    catch (e) { console.error('Save failed', e); }
+  }
+
+  async function saveWriteoffs() {
+    try { await window.storage.set(WRITEOFFS_KEY, JSON.stringify(writeoffs), false); }
+    catch (e) { console.error('Save failed', e); }
+  }
+
+  function monthIncome(y, m) {
+    return entries.filter(e => { const d = new Date(e.date+'T00:00:00'); return d.getFullYear()===y && d.getMonth()===m; })
+      .reduce((s,e)=>s+e.amount,0);
+  }
+  function monthWriteoffs(y, m) {
+    return writeoffs.filter(e => { const d = new Date(e.date+'T00:00:00'); return d.getFullYear()===y && d.getMonth()===m; })
+      .reduce((s,e)=>s+e.amount,0);
+  }
+  function yearIncome(y) {
+    return entries.filter(e => new Date(e.date+'T00:00:00').getFullYear()===y).reduce((s,e)=>s+e.amount,0);
+  }
+  function yearWriteoffs(y) {
+    return writeoffs.filter(e => new Date(e.date+'T00:00:00').getFullYear()===y).reduce((s,e)=>s+e.amount,0);
+  }
+
+  function entriesForDate(dateStr) { return entries.filter(e => e.date === dateStr); }
+  function writeoffsForDate(dateStr) { return writeoffs.filter(e => e.date === dateStr); }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function render() {
+    const app = document.getElementById('app');
+    if (!loaded) { app.innerHTML = '<div class="loading">Loading your tracker…</div>'; return; }
+
+    const mIncome = monthIncome(currentYear, currentMonth);
+    const mWrite = monthWriteoffs(currentYear, currentMonth);
+    const yIncome = yearIncome(currentYear);
+    const yWrite = yearWriteoffs(currentYear);
+
+    const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+    const dim = daysInMonth(currentYear, currentMonth);
+
+    let dayCells = '';
+    for (let i = 0; i < firstDay; i++) dayCells += `<div class="cal-day empty"></div>`;
+    for (let d = 1; d <= dim; d++) {
+      const dateStr = toDateStr(currentYear, currentMonth, d);
+      const dayClientCount = entriesForDate(dateStr).length;
+      const hasWriteoff = writeoffsForDate(dateStr).length > 0;
+      const isToday = dateStr === todayStr();
+      const isSelected = dateStr === selectedDate;
+      dayCells += `
+        <div class="cal-day ${isToday?'today':''} ${isSelected?'selected':''}" data-date="${dateStr}">
+          <span>${d}</span>
+          <div class="dot-row">
+            ${dayClientCount === 1 ? '<span class="dot"></span>' : ''}
+            ${dayClientCount > 1 ? `<span class="count-badge">×${dayClientCount}</span>` : ''}
+            ${hasWriteoff ? '<span class="dot writeoff"></span>' : ''}
+          </div>
+        </div>`;
+    }
+
+    const dowCells = dowNames.map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+    let panelHtml = '';
+    if (selectedDate) {
+      const dayClients = entriesForDate(selectedDate);
+      const dayWriteoffs = writeoffsForDate(selectedDate);
+      const [yy, mm, dd] = selectedDate.split('-').map(Number);
+      const niceDate = new Date(yy, mm-1, dd).toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+      let listHtml = '';
+      if (activeTab === 'client') {
+        if (dayClients.length === 0) {
+          listHtml = `<div class="empty-state">No clients logged for this day yet 💅</div>`;
+        } else {
+          listHtml = `<div class="entry-list">` + dayClients.map(e => `
+            <div class="entry-row">
+              <div class="entry-info">
+                <span class="entry-name">${escapeHtml(e.name)}</span>
+                ${e.service ? `<span class="entry-service">${escapeHtml(e.service)}</span>` : ''}
+              </div>
+              <div class="entry-right">
+                <span class="entry-amount">${fmtMoney(e.amount)}</span>
+                <button class="entry-delete" data-kind="client" data-id="${e.id}" title="Delete">✕</button>
+              </div>
+            </div>`).join('') + `</div>`;
+        }
+      } else {
+        if (dayWriteoffs.length === 0) {
+          listHtml = `<div class="empty-state">No write-offs logged for this day yet 🧾</div>`;
+        } else {
+          listHtml = `<div class="entry-list">` + dayWriteoffs.map(e => `
+            <div class="entry-row">
+              <div class="entry-info">
+                <span class="entry-name">${escapeHtml(e.desc)}</span>
+              </div>
+              <div class="entry-right">
+                <span class="entry-amount writeoff-amt">${fmtMoney(e.amount)}</span>
+                <button class="entry-delete" data-kind="writeoff" data-id="${e.id}" title="Delete">✕</button>
+              </div>
+            </div>`).join('') + `</div>`;
+        }
+      }
+
+      const dayClientTotal = dayClients.reduce((s,e)=>s+e.amount,0);
+      const dayWriteoffTotal = dayWriteoffs.reduce((s,e)=>s+e.amount,0);
+
+      const formHtml = activeTab === 'client'
+        ? `<form id="addForm" class="add-form">
+            <input type="text" id="clientName" placeholder="Client name" required>
+            <input type="number" id="clientAmount" placeholder="Amount ($)" step="0.01" min="0" required>
+            <button type="submit" class="add-btn client-btn">Add client payment</button>
+          </form>`
+        : `<form id="addForm" class="add-form">
+            <input type="text" id="writeoffDesc" class="full" placeholder="What did you buy?" required>
+            <input type="number" id="writeoffAmount" class="full" placeholder="Amount ($)" step="0.01" min="0" required>
+            <button type="submit" class="add-btn writeoff-btn">Add write-off</button>
+          </form>`;
+
+      panelHtml = `
+        <div class="day-panel">
+          <div class="panel-card">
+            <h3>${niceDate}</h3>
+            <div class="day-total">
+              ${dayClients.length ? 'Clients: ' + fmtMoney(dayClientTotal) + '  ' : ''}
+              ${dayWriteoffs.length ? '· Write-offs: ' + fmtMoney(dayWriteoffTotal) : ''}
+              ${(!dayClients.length && !dayWriteoffs.length) ? 'Nothing logged yet' : ''}
+            </div>
+            <div class="tab-row">
+              <button class="tab-btn client ${activeTab==='client'?'active':''}" data-tab="client">💅 Client</button>
+              <button class="tab-btn writeoff ${activeTab==='writeoff'?'active':''}" data-tab="writeoff">🧾 Write-off</button>
+            </div>
+            ${listHtml}
+            ${formHtml}
+          </div>
+        </div>`;
+    }
+
+    app.innerHTML = `
+      <header>
+        <div class="icon-row">💅 ✨ 💅</div>
+        <h1>Tay's Nails</h1>
+        <p>Client &amp; payment tracker</p>
+      </header>
+
+      <div class="stats ${showYTD ? 'two-up' : 'one-up'}">
+        <div class="stat-card month">
+          <div class="stat-title">${monthNames[currentMonth]} ${currentYear}</div>
+          <div class="stat-net-label">Net</div>
+          <div class="stat-net">${fmtMoney(mIncome - mWrite)}</div>
+          <div class="stat-breakdown">
+            <div>Income: <span class="amt">${fmtMoney(mIncome)}</span></div>
+            <div>Write-offs: <span class="amt">${fmtMoney(mWrite)}</span></div>
+          </div>
+        </div>
+        ${showYTD ? `
+        <div class="stat-card year">
+          <div class="stat-title">${currentYear} Year to Date</div>
+          <div class="stat-net-label">Net</div>
+          <div class="stat-net">${fmtMoney(yIncome - yWrite)}</div>
+          <div class="stat-breakdown">
+            <div>Income: <span class="amt">${fmtMoney(yIncome)}</span></div>
+            <div>Write-offs: <span class="amt">${fmtMoney(yWrite)}</span></div>
+          </div>
+        </div>` : ''}
+      </div>
+
+      <div class="ytd-toggle-wrap">
+        <button id="ytdToggle" class="ytd-toggle-btn">${showYTD ? 'Hide Year to Date' : '📅 Show Year to Date'}</button>
+      </div>
+
+      <div class="calendar-wrap">
+        <div class="cal-header">
+          <h2>${monthNames[currentMonth]} ${currentYear}</h2>
+          <div class="cal-nav">
+            <button id="prevMonth">‹</button>
+            <button id="nextMonth">›</button>
+          </div>
+        </div>
+        <div class="cal-grid">
+          ${dowCells}
+          ${dayCells}
+        </div>
+      </div>
+
+      ${panelHtml}
+
+      <div class="export-wrap">
+        <div class="export-title">For tax time</div>
+        <div class="export-buttons">
+          <button id="exportMonth" class="export-btn">⬇️ Download ${monthNames[currentMonth]} ${currentYear}</button>
+          <button id="exportYear" class="export-btn">⬇️ Download ${currentYear} Year to Date</button>
+        </div>
+      </div>
+
+      <div class="hint">Tap any day to log a client payment or a write-off — pink dots and ×2, ×3 badges show multiple clients in one day, green dots are write-offs.</div>
+    `;
+
+    attachHandlers();
+  }
+
+  function attachHandlers() {
+    const ytdBtn = document.getElementById('ytdToggle');
+    if (ytdBtn) ytdBtn.onclick = () => { showYTD = !showYTD; render(); };
+
+    const exportMonthBtn = document.getElementById('exportMonth');
+    if (exportMonthBtn) exportMonthBtn.onclick = () => exportMonthCSV(currentYear, currentMonth);
+
+    const exportYearBtn = document.getElementById('exportYear');
+    if (exportYearBtn) exportYearBtn.onclick = () => exportYearCSV(currentYear);
+
+    document.getElementById('prevMonth').onclick = () => {
+      currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+      render();
+    };
+    document.getElementById('nextMonth').onclick = () => {
+      currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+      render();
+    };
+
+    document.querySelectorAll('.cal-day[data-date]').forEach(el => {
+      el.onclick = () => {
+        const date = el.getAttribute('data-date');
+        selectedDate = (selectedDate === date) ? null : date;
+        render();
+      };
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = () => { activeTab = btn.getAttribute('data-tab'); render(); };
+    });
+
+    const addForm = document.getElementById('addForm');
+    if (addForm) {
+      addForm.onsubmit = async (e) => {
+        e.preventDefault();
+        if (activeTab === 'client') {
+          const name = document.getElementById('clientName').value.trim();
+          const amount = parseFloat(document.getElementById('clientAmount').value);
+          if (!name || isNaN(amount)) return;
+          entries.push({ id: 'e'+Date.now()+Math.random().toString(36).slice(2,7), date: selectedDate, name, amount });
+          await saveEntries();
+        } else {
+          const desc = document.getElementById('writeoffDesc').value.trim();
+          const amount = parseFloat(document.getElementById('writeoffAmount').value);
+          if (!desc || isNaN(amount)) return;
+          writeoffs.push({ id: 'w'+Date.now()+Math.random().toString(36).slice(2,7), date: selectedDate, desc, amount });
+          await saveWriteoffs();
+        }
+        render();
+      };
+    }
+
+    document.querySelectorAll('.entry-delete').forEach(btn => {
+      btn.onclick = async () => {
+        const id = btn.getAttribute('data-id');
+        const kind = btn.getAttribute('data-kind');
+        if (kind === 'client') { entries = entries.filter(e => e.id !== id); await saveEntries(); }
+        else { writeoffs = writeoffs.filter(e => e.id !== id); await saveWriteoffs(); }
+        render();
+      };
+    });
+  }
+
+  // ------------------- CSV export -------------------
+  // Plain-text CSV instead of a binary .xlsx — this avoids any external
+  // library and downloads reliably, and opens in Excel/Google Sheets
+  // looking just like a spreadsheet.
+
+  function sortByDate(list) {
+    return [...list].sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  function csvEscape(value) {
+    const str = String(value);
+    if (/[",\n]/.test(str)) return '"' + str.replace(/"/g, '""') + '"';
+    return str;
+  }
+
+  function toCsvLine(fields) {
+    return fields.map(csvEscape).join(',');
+  }
+
+  function downloadCSV(text, filename) {
+    const blob = new Blob(['\uFEFF' + text], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 200);
+  }
+
+  function exportMonthCSV(year, month) {
+    const monthClients = sortByDate(entries.filter(e => { const d = new Date(e.date+'T00:00:00'); return d.getFullYear()===year && d.getMonth()===month; }));
+    const monthWriteoffs = sortByDate(writeoffs.filter(e => { const d = new Date(e.date+'T00:00:00'); return d.getFullYear()===year && d.getMonth()===month; }));
+    const income = monthClients.reduce((s,e)=>s+e.amount,0);
+    const write = monthWriteoffs.reduce((s,e)=>s+e.amount,0);
+
+    const lines = [];
+    lines.push(toCsvLine([`Tay's Nails — ${monthNames[month]} ${year}`]));
+    lines.push('');
+    lines.push(toCsvLine(['Clients']));
+    lines.push(toCsvLine(['Date', 'Client', 'Service', 'Amount']));
+    monthClients.forEach(e => lines.push(toCsvLine([e.date, e.name, e.service || '', e.amount.toFixed(2)])));
+    lines.push('');
+    lines.push(toCsvLine(['Write-Offs']));
+    lines.push(toCsvLine(['Date', 'Description', 'Amount']));
+    monthWriteoffs.forEach(e => lines.push(toCsvLine([e.date, e.desc, e.amount.toFixed(2)])));
+    lines.push('');
+    lines.push(toCsvLine(['Summary']));
+    lines.push(toCsvLine(['Total Income', income.toFixed(2)]));
+    lines.push(toCsvLine(['Total Write-Offs', write.toFixed(2)]));
+    lines.push(toCsvLine(['Net Income', (income - write).toFixed(2)]));
+
+    downloadCSV(lines.join('\r\n'), `Tays-Nails-${monthNames[month]}-${year}.csv`);
+  }
+
+  function exportYearCSV(year) {
+    const yearClients = sortByDate(entries.filter(e => new Date(e.date+'T00:00:00').getFullYear() === year));
+    const yearWriteoffsList = sortByDate(writeoffs.filter(e => new Date(e.date+'T00:00:00').getFullYear() === year));
+
+    const lines = [];
+    lines.push(toCsvLine([`Tay's Nails — ${year} Year to Date`]));
+    lines.push('');
+    lines.push(toCsvLine(['Monthly Summary']));
+    lines.push(toCsvLine(['Month', 'Income', 'Write-Offs', 'Net']));
+
+    let totalIncome = 0, totalWrite = 0;
+    for (let m = 0; m < 12; m++) {
+      const mIncome = yearClients.filter(e => new Date(e.date+'T00:00:00').getMonth() === m).reduce((s,e)=>s+e.amount,0);
+      const mWrite = yearWriteoffsList.filter(e => new Date(e.date+'T00:00:00').getMonth() === m).reduce((s,e)=>s+e.amount,0);
+      totalIncome += mIncome; totalWrite += mWrite;
+      lines.push(toCsvLine([monthNames[m], mIncome.toFixed(2), mWrite.toFixed(2), (mIncome - mWrite).toFixed(2)]));
+    }
+    lines.push(toCsvLine(['Total', totalIncome.toFixed(2), totalWrite.toFixed(2), (totalIncome - totalWrite).toFixed(2)]));
+    lines.push('');
+
+    lines.push(toCsvLine(['All Clients']));
+    lines.push(toCsvLine(['Date', 'Client', 'Service', 'Amount']));
+    yearClients.forEach(e => lines.push(toCsvLine([e.date, e.name, e.service || '', e.amount.toFixed(2)])));
+    lines.push('');
+
+    lines.push(toCsvLine(['All Write-Offs']));
+    lines.push(toCsvLine(['Date', 'Description', 'Amount']));
+    yearWriteoffsList.forEach(e => lines.push(toCsvLine([e.date, e.desc, e.amount.toFixed(2)])));
+
+    downloadCSV(lines.join('\r\n'), `Tays-Nails-YTD-${year}.csv`);
+  }
+
+  loadData();
+})();
+</script>
+
+
+</body>
+</html>
